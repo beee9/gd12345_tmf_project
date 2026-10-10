@@ -1,0 +1,23 @@
+# Python and IDE artifacts
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.idea/
+
+# Logs and local secrets
+*.log
+_06_app/deepseek_api_key.txt
+*.env
+.env
+
+# Large generated artifacts
+*.bin
+*.bin.*
+*.pt
+*.pth
+*.pkl
+*.safetensors
+*.onnx
+*.whl
+backup_*/

@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>12345政务服务便民热线 · 工单智能分类系统</title>
+  <meta name="description" content="面向12345政务服务便民热线的工单智能分类系统——集成随机森林、FastText、BERT与DeepSeek大模型，推动群众诉求精准归类、高效流转、闭环处置。" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%232563EB'/><text x='50' y='70' font-size='54' font-family='Arial' font-weight='bold' text-anchor='middle' fill='white'>5</text></svg>" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Tailwind Configuration -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            heading: ['"Bebas Neue"', '"PingFang SC"', '"Microsoft YaHei"', 'sans-serif'],
+            sans: ['Inter', '"PingFang SC"', '"Microsoft YaHei"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              primary: '#2563EB',
+              'primary-hover': '#1D4ED8',
+              dark: '#050505',
+            },
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- CSS Overrides -->
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+
+    html,
+    body {
+      background-color: #F4F6FA;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    ::selection {
+      background: #2563EB;
+      color: #FFFFFF;
+    }
+
+    /* 自定义滚动条（浅色） */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F4F6FA;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 5px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #2563EB;
+    }
+
+    @keyframes scrollIndicator {
+      0%, 100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      50% {
+        transform: translateY(6px);
+        opacity: 0.5;
+      }
+    }
+
+    .animate-scroll {
+      animation: scrollIndicator 1.5s ease-in-out infinite;
+    }
+
+    /* 导航滚动后变浅色毛玻璃 */
+    nav {
+      transition: background-color 0.3s, box-shadow 0.3s;
+    }
+
+    /* 表单控件浅色样式 */
+    .field {
+      width: 100%;
+      background: #FFFFFF;
+      border: 1px solid #E5E7EB;
+      border-radius: 0.5rem;
+      color: #111827;
+      font-size: 0.875rem;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      outline: none;
+    }
+    .field::placeholder {
+      color: #9CA3AF;
+    }
+    .field:focus {
+      border-color: #2563EB;
+      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.35);
+    }
+    select.field option {
+      background: #FFFFFF;
+      color: #111827;
+    }
+  </style>
+</head>
+
+<body class="bg-[#F4F6FA] text-gray-900 font-sans antialiased">
+
+  <!-- ===================== NAVIGATION ===================== -->
+  <nav class="fixed top-0 w-full z-50 px-8 py-8">
+    <div class="flex items-center justify-between">
+
+      <!-- Logo -->
+      <a href="#" class="w-[130px] lg:w-[200px] text-xl font-semibold tracking-[0.4em] cursor-pointer select-none">
+        <span class="nav-logo-w text-white">12</span><span class="text-[#2563EB]">3</span><span class="nav-logo-w text-white">45</span>
+      </a>
+
+      <!-- Nav Links (Center) -->
+      <div class="hidden lg:flex items-center gap-10 absolute left-1/2 -translate-x-1/2">
+        <a href="#" class="text-[10px] font-semibold tracking-[0.2em] text-[#2563EB] transition-colors duration-300">首页</a>
+        <a href="#tagging" class="nav-link text-[10px] font-semibold tracking-[0.2em] text-gray-300 transition-colors duration-300 hover:text-[#2563EB]">智能打标</a>
+        <a href="#models" class="nav-link text-[10px] font-semibold tracking-[0.2em] text-gray-300 transition-colors duration-300 hover:text-[#2563EB]">模型支撑</a>
+        <a href="#classes" class="nav-link text-[10px] font-semibold tracking-[0.2em] text-gray-300 transition-colors duration-300 hover:text-[#2563EB]">类别体系</a>
+        <a href="http://127.0.0.1:8501" target="_blank" class="nav-link text-[10px] font-semibold tracking-[0.2em] text-gray-300 transition-colors duration-300 hover:text-[#2563EB]">数据大屏</a>
+        <a href="#about" class="nav-link text-[10px] font-semibold tracking-[0.2em] text-gray-300 transition-colors duration-300 hover:text-[#2563EB]">系统说明</a>
+      </div>
+
+      <!-- Right Actions -->
+      <div class="w-auto lg:w-[200px] flex items-center justify-end gap-5">
+        <!-- Dark Mode Toggle -->
+        <button type="button" id="theme-toggle" aria-label="Toggle dark mode"
+          class="nav-glass w-8 h-8 flex items-center justify-center rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-colors duration-300">
+          <!-- Sun Icon -->
+          <svg id="icon-sun" class="nav-glass-icon w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+          </svg>
+          <!-- Moon Icon (hidden) -->
+          <svg id="icon-moon" class="nav-glass-icon w-3.5 h-3.5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+          </svg>
+        </button>
+
+        <!-- 立即打标 Button -->
+        <a href="#tagging"
+          class="hidden sm:flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] border border-white/25 text-white px-5 py-2 rounded-md text-[10px] font-bold tracking-[0.1em] transition-colors duration-300">
+          立即打标
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+          </svg>
+        </a>
+
+        <!-- 汉堡菜单（移动端） -->
+        <button type="button" id="menu-toggle" aria-label="打开菜单"
+          class="nav-glass lg:hidden w-8 h-8 flex items-center justify-center rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-colors duration-300">
+          <svg class="nav-glass-icon w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+      </div>
+
+    </div>
+  </nav>
+
+  <!-- ===================== 移动端菜单 ===================== -->
+  <div id="mobile-menu" class="hidden lg:hidden fixed top-20 left-4 right-4 z-40 rounded-2xl bg-white/95 backdrop-blur-xl border border-gray-200 p-6 shadow-2xl">
+    <div class="flex flex-col gap-4">
+      <a href="#" class="text-[11px] font-semibold tracking-[0.2em] text-[#2563EB] transition-colors duration-300">首页</a>
+      <a href="#tagging" class="text-[11px] font-semibold tracking-[0.2em] text-gray-700 transition-colors duration-300 hover:text-[#2563EB]">智能打标</a>
+      <a href="#models" class="text-[11px] font-semibold tracking-[0.2em] text-gray-700 transition-colors duration-300 hover:text-[#2563EB]">模型支撑</a>
+      <a href="#classes" class="text-[11px] font-semibold tracking-[0.2em] text-gray-700 transition-colors duration-300 hover:text-[#2563EB]">类别体系</a>
+      <a href="http://127.0.0.1:8501" target="_blank" class="text-[11px] font-semibold tracking-[0.2em] text-gray-700 transition-colors duration-300 hover:text-[#2563EB]">数据大屏</a>
+      <a href="#about" class="text-[11px] font-semibold tracking-[0.2em] text-gray-700 transition-colors duration-300 hover:text-[#2563EB]">系统说明</a>
+      <a href="#tagging"
+        class="mt-2 flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-5 py-3 rounded-lg text-[11px] font-bold tracking-[0.1em] transition-colors duration-300">
+        立即打标
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- ===================== MAIN HERO ===================== -->
+  <main class="relative h-screen w-full overflow-hidden flex items-center">
+
+    <!-- 政务蓝渐变背景 -->
+    <div class="absolute inset-0 z-0 bg-gradient-to-br from-[#1D4ED8] via-[#2563EB] to-[#60A5FA]"></div>
+
+    <!-- 光晕动效（柔和呼吸感） -->
+    <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+      <div class="absolute -top-32 -left-32 w-[40rem] h-[40rem] rounded-full bg-white/10 blur-3xl animate-pulse"></div>
+      <div class="absolute bottom-0 right-0 w-[36rem] h-[36rem] rounded-full bg-sky-200/10 blur-3xl"></div>
+      <div class="absolute top-1/3 right-1/4 w-72 h-72 rounded-full bg-white/5 blur-2xl animate-pulse" style="animation-delay:1.2s"></div>
+    </div>
+
+    <!-- 浅色网格纹理（政务科技感） -->
+    <div class="absolute inset-0 z-0 pointer-events-none opacity-[0.08]"
+      style="background-image:linear-gradient(rgba(255,255,255,0.9) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.9) 1px,transparent 1px);background-size:64px 64px;"></div>
+
+    <!-- Overlays（左侧加深保证白色文字可读） -->
+    <div class="absolute inset-0 z-10 pointer-events-none bg-gradient-to-r from-blue-950/70 via-blue-900/25 to-transparent"></div>
+
+    <!-- Content Container -->
+    <div class="relative z-20 w-full px-8 md:px-16 flex justify-between items-center h-full">
+
+      <!-- Left Text Content -->
+      <div class="max-w-2xl mt-16">
+
+        <!-- H1 Headline -->
+        <h1 class="font-heading text-4xl md:text-5xl lg:text-6xl leading-[1.05] tracking-normal drop-shadow-lg">
+          <span class="block text-white">智能分类</span>
+          <span class="block text-white">精准打标</span>
+          <span class="block text-white">高效治理</span>
+        </h1>
+
+        <!-- Subheadline -->
+        <p class="mt-6 text-gray-200 text-sm md:text-base max-w-sm font-normal leading-relaxed drop-shadow-md">
+          面向 12345 政务服务便民热线的工单智能分类系统——集成随机森林 / FastText / BERT / DeepSeek 大模型，推动群众诉求精准归类、高效流转、闭环处置。
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="mt-8 flex flex-col sm:flex-row flex-wrap gap-4">
+
+          <!-- Primary CTA -->
+          <a href="#tagging"
+            class="inline-flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-7 py-3 rounded-lg text-[11px] font-bold tracking-[0.1em] transition-colors duration-300 shadow-lg shadow-blue-900/30">
+            立即打标
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+            </svg>
+          </a>
+
+          <!-- Secondary CTA -->
+          <a href="#classes"
+            class="inline-flex items-center justify-center border border-white/40 hover:border-white hover:bg-white/10 text-white px-7 py-3 rounded-lg text-[11px] font-bold tracking-[0.1em] transition-colors duration-300">
+            工单类别说明
+          </a>
+
+        </div>
+      </div>
+
+      <!-- Right Spacer (balances justify-between with the absolute pagination on lg+) -->
+      <div class="hidden lg:block w-[200px]"></div>
+
+    </div>
+
+    <!-- Right Side Navigation Indicators -->
+    <div class="hidden lg:flex flex-col gap-6 text-[10px] font-bold tracking-[0.2em] absolute right-16 top-1/2 -translate-y-1/2 z-20">
+
+      <!-- Active Item -->
+      <div class="flex items-center gap-4 group cursor-pointer" onclick="document.getElementById('models').scrollIntoView({behavior:'smooth'})">
+        <span class="w-4 text-white drop-shadow-md">01</span>
+        <span class="text-white drop-shadow-md">随机森林</span>
+      </div>
+
+      <!-- Inactive Items -->
+      <div class="flex items-center gap-4 group cursor-pointer" onclick="document.getElementById('models').scrollIntoView({behavior:'smooth'})">
+        <span class="w-4 text-white/80 drop-shadow-md transition-colors duration-300 group-hover:text-white">02</span>
+        <span class="text-white/80 drop-shadow-md transition-colors duration-300 group-hover:text-white">FASTTEXT</span>
+      </div>
+      <div class="flex items-center gap-4 group cursor-pointer" onclick="document.getElementById('models').scrollIntoView({behavior:'smooth'})">
+        <span class="w-4 text-white/80 drop-shadow-md transition-colors duration-300 group-hover:text-white">03</span>
+        <span class="text-white/80 drop-shadow-md transition-colors duration-300 group-hover:text-white">BERT</span>
+      </div>
+      <div class="flex items-center gap-4 group cursor-pointer" onclick="document.getElementById('models').scrollIntoView({behavior:'smooth'})">
+        <span class="w-4 text-white/80 drop-shadow-md transition-colors duration-300 group-hover:text-white">04</span>
+        <span class="text-white/80 drop-shadow-md transition-colors duration-300 group-hover:text-white">大语言模型</span>
+      </div>
+
+    </div>
+
+    <!-- Scroll Indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2">
+      <span class="text-[9px] font-semibold tracking-[0.3em] text-white/80 drop-shadow-md">SCROLL</span>
+      <svg class="w-4 h-4 text-white animate-scroll drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+      </svg>
+    </div>
+
+  </main>
+
+  <!-- ===================== 智能打标 ===================== -->
+  <section id="tagging" class="relative w-full py-28 px-8 md:px-16 scroll-mt-24">
+    <div class="max-w-6xl mx-auto">
+
+      <!-- Section Header -->
+      <div class="text-center mb-14">
+        <span class="text-[10px] font-bold tracking-[0.2em] text-[#2563EB]">// 智能打标平台</span>
+        <h2 class="font-heading text-5xl lg:text-7xl mt-4 leading-[0.9] tracking-normal text-gray-900">工单智能<span class="text-[#2563EB]">打标</span></h2>
+        <p class="mt-4 text-gray-500 text-sm md:text-base">输入工单内容，选择模型，系统自动归入对应类别</p>
+      </div>
+
+      <!-- Tagging Card -->
+      <div class="max-w-4xl mx-auto rounded-2xl bg-white border border-gray-200/70 shadow-sm p-6 md:p-10">
+
+        <label for="ticket-text" class="block text-[10px] font-bold tracking-[0.2em] text-gray-600 mb-3">工单内容</label>
+        <textarea id="ticket-text" class="field px-4 py-3 leading-relaxed" rows="5"
+          placeholder="请输入工单内容，例如：我家小区门口的路灯坏了三个月没人修，晚上出行非常危险"></textarea>
+
+        <!-- Examples -->
+        <div class="mt-4">
+          <p class="text-[10px] font-bold tracking-[0.2em] text-gray-400 mb-2">点击示例一键填入</p>
+          <div id="example-chips" class="flex flex-wrap gap-2"></div>
+        </div>
+
+        <!-- Controls -->
+        <div class="mt-6 flex flex-col sm:flex-row flex-wrap gap-4 items-stretch sm:items-center">
+          <select id="model-select" class="field sm:w-56 px-4 py-3 font-semibold tracking-wider"></select>
+
+          <button id="btn-predict"
+            class="inline-flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-7 py-3 rounded-lg text-[11px] font-bold tracking-[0.1em] transition-colors duration-300">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            </svg>
+            开始打标
+          </button>
+
+          <button id="btn-compare"
+            class="inline-flex items-center justify-center gap-2 border border-gray-300 hover:border-[#2563EB] hover:bg-blue-50 text-gray-700 px-7 py-3 rounded-lg text-[11px] font-bold tracking-[0.1em] transition-colors duration-300">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6h18M3 12h18M3 18h12"></path>
+            </svg>
+            四模型投票
+          </button>
+        </div>
+
+        <!-- Result -->
+        <div id="result-box" class="mt-8 hidden">
+          <div id="result-single"></div>
+          <div id="result-compare"></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 模型支撑 ===================== -->
+  <section id="models" class="relative w-full py-28 px-8 md:px-16 scroll-mt-24">
+    <div class="max-w-6xl mx-auto">
+
+      <div class="text-center mb-14">
+        <span class="text-[10px] font-bold tracking-[0.2em] text-[#2563EB]">// 模型支撑</span>
+        <h2 class="font-heading text-5xl lg:text-7xl mt-4 leading-[0.9] tracking-normal text-gray-900">模型支撑<span class="text-[#2563EB]">平台</span></h2>
+        <p class="mt-4 text-gray-500 text-sm md:text-base">四种技术路线协同支撑，各有侧重</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        <div class="group rounded-2xl bg-white border border-gray-200/70 shadow-sm hover:border-[#2563EB]/50 hover:shadow-md p-6 transition-all duration-300">
+          <span class="font-heading text-4xl text-[#2563EB]">01</span>
+          <h3 class="font-heading text-3xl mt-3 tracking-wide text-gray-900">随机森林</h3>
+          <p class="mt-3 text-gray-500 text-sm leading-relaxed">TF-IDF 特征 + 随机森林算法，CPU 基线模型，响应迅速，适用于大规模工单初筛。</p>
+          <span class="inline-block mt-5 text-[10px] font-bold tracking-[0.2em] px-3 py-1 rounded-full bg-[#EFF4FF] text-[#2563EB]">CPU · 秒级响应</span>
+        </div>
+
+        <div class="group rounded-2xl bg-white border border-gray-200/70 shadow-sm hover:border-[#2563EB]/50 hover:shadow-md p-6 transition-all duration-300">
+          <span class="font-heading text-4xl text-[#2563EB]">02</span>
+          <h3 class="font-heading text-3xl mt-3 tracking-wide text-gray-900">FASTTEXT</h3>
+          <p class="mt-3 text-gray-500 text-sm leading-relaxed">词向量表示学习 + 自动调参，轻量高效，兼顾响应速度与分类准确率。</p>
+          <span class="inline-block mt-5 text-[10px] font-bold tracking-[0.2em] px-3 py-1 rounded-full bg-[#EFF4FF] text-[#2563EB]">CPU · 快速</span>
+        </div>
+
+        <div class="group rounded-2xl bg-white border border-gray-200/70 shadow-sm hover:border-[#2563EB]/50 hover:shadow-md p-6 transition-all duration-300">
+          <span class="font-heading text-4xl text-[#2563EB]">03</span>
+          <h3 class="font-heading text-3xl mt-3 tracking-wide text-gray-900">BERT</h3>
+          <p class="mt-3 text-gray-500 text-sm leading-relaxed">中文预训练模型微调，语义理解能力强，整体分类效果最优。</p>
+          <span class="inline-block mt-5 text-[10px] font-bold tracking-[0.2em] px-3 py-1 rounded-full bg-[#EFF4FF] text-[#2563EB]">GPU/CPU · 首次加载较慢</span>
+        </div>
+
+        <div class="group rounded-2xl bg-white border border-gray-200/70 shadow-sm hover:border-[#2563EB]/50 hover:shadow-md p-6 transition-all duration-300">
+          <span class="font-heading text-4xl text-[#2563EB]">04</span>
+          <h3 class="font-heading text-3xl mt-3 tracking-wide text-gray-900">大语言模型</h3>
+          <p class="mt-3 text-gray-500 text-sm leading-relaxed">DeepSeek 大模型提示词分类，无需训练样本即可适配新场景，需配置 API 密钥。</p>
+          <span class="inline-block mt-5 text-[10px] font-bold tracking-[0.2em] px-3 py-1 rounded-full bg-[#EFF4FF] text-[#2563EB]">API · 需密钥</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 类别体系 ===================== -->
+  <section id="classes" class="relative w-full py-28 px-8 md:px-16 scroll-mt-24">
+    <div class="max-w-6xl mx-auto">
+
+      <div class="text-center mb-14">
+        <span class="text-[10px] font-bold tracking-[0.2em] text-[#2563EB]">// 工单类别体系</span>
+        <h2 class="font-heading text-5xl lg:text-7xl mt-4 leading-[0.9] tracking-normal text-gray-900"><span class="text-[#2563EB]">14</span> 类工单类别</h2>
+        <p class="mt-4 text-gray-500 text-sm md:text-base">系统自动将工单归入以下 14 个类别</p>
+      </div>
+
+      <div id="class-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+
+    </div>
+  </section>
+
+  <!-- ===================== 系统说明 / Footer ===================== -->
+  <footer id="about" class="border-t border-gray-200 px-8 md:px-16 py-10 scroll-mt-24">
+    <div class="max-w-6xl mx-auto">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+        <a href="#" class="text-xl font-semibold tracking-[0.4em] select-none">
+          <span class="text-gray-900">12</span><span class="text-[#2563EB]">3</span><span class="text-gray-900">45</span>
+        </a>
+        <div class="text-center">
+          <p class="text-[10px] font-semibold tracking-[0.1em] text-gray-600 leading-relaxed">
+            主办单位：××市政务服务便民热线中心（示例占位）｜技术支持：×××（示例占位）
+          </p>
+          <p class="text-[10px] font-semibold tracking-[0.1em] text-gray-500 leading-relaxed mt-2">
+            © 2026 12345 政务服务便民热线 · 工单智能分类系统（学习演示项目）｜ICP备案：××-××××××（示例占位）
+          </p>
+        </div>
+        <div class="flex items-center gap-5 text-[10px] font-semibold tracking-[0.1em]">
+          <a href="#tagging" class="text-gray-500 hover:text-[#2563EB] transition-colors duration-300">智能打标</a>
+          <a href="#models" class="text-gray-500 hover:text-[#2563EB] transition-colors duration-300">模型支撑</a>
+          <a href="#classes" class="text-gray-500 hover:text-[#2563EB] transition-colors duration-300">类别体系</a>
+        </div>
+      </div>
+      <p class="text-[10px] text-gray-400 text-center mt-6 leading-relaxed">
+        免责声明：本系统为人工智能辅助分类工具，分类结果仅供参考，最终结果以人工审核为准。
+      </p>
+    </div>
+  </footer>
+
+  <!-- ===================== SCRIPTS ===================== -->
+  <script>
+    // ---------- 类别说明 ----------
+    const CLASS_DESC = {
+      '科教文体': '科学技术/教育/文化/体育类事项',
+      '公卫医疗': '公共卫生/医疗卫生/医保类事项',
+      '城乡建设': '市政建设/住房/规划/物业类事项',
+      '自然资源与环境保护': '环境污染/生态/自然资源类事项',
+      '交通运输': '公共交通/道路/停车类事项',
+      '农林牧渔': '农业/林业/畜牧业/渔业类事项',
+      '公共安全': '治安/消防/安全生产类事项',
+      '人力资源社会保障': '劳动/就业/社保类事项',
+      '民政社区': '低保/养老/社区服务类事项',
+      '市场监管': '消费维权/食品安全/价格类事项',
+      '经济财贸': '招商引资/企业/商贸类事项',
+      '司法行政': '法律/信访/仲裁类事项',
+      '政风行风党风': '干部作风/党风廉政类事项',
+      '其他': '其他咨询/建议/投诉',
+    };
+
+    // ---------- 示例工单 ----------
+    const EXAMPLES = [
+      '我家小区门口的路灯坏了三个月没人修，晚上出行非常危险，请尽快处理。',
+      '我去年冬天在商场买了一件羽绒服，最近拿出来穿发现严重掉毛，去找商家要求退货，商家说已经过了三包期限不给退，我该怎么办。',
+      '在XX医院住院三天，被要求自费购买了2000多元的进口药，医生说不用这个药就不给安排手术，这合理吗？',
+      'XX建筑公司拖欠我三个月工资共18000元，老板电话不接，人也找不到，希望政府帮忙讨薪。',
+      '楼下烧烤店每晚营业到凌晨两三点，油烟味熏得整栋楼都开不了窗，还经常有客人半夜大声喧哗，严重扰民。',
+      'XX路公交车站牌显示末班车是21:30，但上周连续三天21点就等不到车了，等了40分钟没来，请核实。',
+      'XX化工厂夜间偷偷排放黑色污水到河里，河水已经变黑发臭，鱼都死了，请环保部门来查。',
+      '我在网上报名的培训班突然关门跑路，交了5800元学费只上了一半的课，联系负责人电话已停机。',
+    ];
+
+    // ---------- 工具函数 ----------
+    const $ = (id) => document.getElementById(id);
+    const textarea = $('ticket-text');
+    const resultBox = $('result-box');
+    const singleBox = $('result-single');
+    const compareBox = $('result-compare');
+
+    // 通过 file:// 直接打开时给出醒目提示
+    if (location.protocol === 'file:') {
+      const banner = document.createElement('div');
+      banner.style.cssText =
+        'position:fixed;bottom:0;left:0;right:0;z-index:60;background:#2563EB;color:#fff;' +
+        'font-size:12px;font-weight:700;letter-spacing:0.05em;text-align:center;padding:10px 16px;';
+      banner.textContent =
+        '⚠ 当前为文件方式打开，打标功能不可用 —— 请双击《启动-前端落地页.bat》，再用 http://127.0.0.1:8000 访问';
+      document.body.appendChild(banner);
+    }
+
+    // 失败原因提示
+    function fetchErrorHint(e) {
+      if (location.protocol === 'file:') return '页面需通过 http://127.0.0.1:8000 访问（不要直接双击 index.html）';
+      if (e && (e.name === 'TypeError' || e.message.includes('fetch'))) {
+        return '无法连接后端服务 —— 请双击《启动-前端落地页.bat》启动服务，并确认本机已开启代理时浏览器未拦截 127.0.0.1';
+      }
+      return e ? e.message : '未知错误';
+    }
+
+    async function api(path, body) {
+      const resp = await fetch(path, {
+        method: body ? 'POST' : 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        body: body ? JSON.stringify(body) : undefined,
+      });
+      return resp.json();
+    }
+
+    function setLoading(btn, loading, label) {
+      btn.disabled = loading;
+      btn.style.opacity = loading ? '0.6' : '1';
+      btn.innerHTML = loading
+        ? '<svg class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> 预测中...'
+        : label;
+    }
+
+    // ---------- 初始化：类别 / 模型 / 示例 ----------
+    (async function init() {
+      try {
+        const res = await api('/api/classes');
+        const classes = res.classes;
+        if (!Array.isArray(classes)) throw new Error('类别数据格式错误');
+        const grid = $('class-grid');
+        grid.innerHTML = classes.map((name, i) => `
+          <div class="rounded-xl bg-white border border-gray-200/70 shadow-sm hover:border-[#2563EB]/50 hover:shadow-md p-4 transition-all duration-300">
+            <span class="font-heading text-2xl text-[#2563EB]">${String(i + 1).padStart(2, '0')}</span>
+            <p class="mt-1 text-sm font-semibold text-gray-900">${name}</p>
+          </div>`).join('');
+      } catch (e) {
+        console.error('加载类别失败', e);
+        $('class-grid').innerHTML =
+          '<p class="col-span-full text-[#DC2626] text-sm">❌ 类别加载失败 —— 请确认后端服务已运行，并刷新页面</p>';
+      }
+
+      try {
+        const res = await api('/api/models');
+        const models = res.models;
+        if (!Array.isArray(models)) throw new Error('模型数据格式错误');
+        $('model-select').innerHTML = models
+          .map(m => `<option value="${m}" ${m === '随机森林' ? 'selected' : ''}>🤖 ${m}</option>`).join('');
+      } catch (e) {
+        console.error('加载模型失败', e);
+        $('model-select').innerHTML = '<option value="随机森林">🤖 随机森林</option>';
+      }
+
+      const chips = $('example-chips');
+      chips.innerHTML = EXAMPLES
+        .map(ex => `<button type="button" class="text-[10px] font-semibold tracking-wide text-gray-600 bg-white border border-gray-200 hover:border-[#2563EB] hover:text-[#2563EB] px-3 py-1.5 rounded-full transition-colors duration-300 max-w-full truncate" onclick="fillExample(this)">${ex}</button>`)
+        .join('');
+    })();
+
+    window.fillExample = function (btn) {
+      textarea.value = btn.textContent.trim();
+      textarea.focus();
+    };
+
+    // ---------- 导航滚动切换（浅色毛玻璃） ----------
+    const nav = document.querySelector('nav');
+    function updateNav() {
+      const scrolled = window.scrollY > 80;
+      nav.classList.toggle('bg-white/95', scrolled);
+      nav.classList.toggle('backdrop-blur-xl', scrolled);
+      nav.classList.toggle('shadow-lg', scrolled);
+      nav.classList.toggle('shadow-gray-900/5', scrolled);
+      document.querySelectorAll('.nav-logo-w').forEach(e => e.classList.toggle('text-[#111827]', scrolled));
+      document.querySelectorAll('.nav-link').forEach(e => {
+        e.classList.toggle('text-gray-700', scrolled);
+        e.classList.toggle('text-gray-300', !scrolled);
+      });
+      document.querySelectorAll('.nav-glass').forEach(e => {
+        e.classList.toggle('bg-white/5', !scrolled);
+        e.classList.toggle('border-white/10', !scrolled);
+        e.classList.toggle('bg-gray-900/5', scrolled);
+        e.classList.toggle('border-gray-900/10', scrolled);
+      });
+      document.querySelectorAll('.nav-glass-icon').forEach(e => e.classList.toggle('text-gray-700', scrolled));
+    }
+    window.addEventListener('scroll', updateNav, { passive: true });
+    updateNav();
+
+    // ---------- 单模型预测 ----------
+    $('btn-predict').addEventListener('click', async () => {
+      const text = textarea.value.trim();
+      if (!text) { alert('请输入工单内容'); textarea.focus(); return; }
+
+      const btn = $('btn-predict');
+      const origLabel = btn.innerHTML;
+      setLoading(btn, true, '');
+      resultBox.classList.remove('hidden');
+      singleBox.innerHTML = '<p class="text-gray-500 text-sm">⏳ 正在预测（首次加载模型可能需要一些时间，请耐心等待）...</p>';
+      compareBox.innerHTML = '';
+
+      try {
+        const res = await api('/api/predict', { text, model: $('model-select').value });
+        if (res.ok) {
+          singleBox.innerHTML = `
+            <div class="rounded-xl bg-[#F4F6FA] border border-gray-200/70 p-6 text-center">
+              <p class="text-[10px] font-bold tracking-[0.3em] text-gray-400">预测类别</p>
+              <p class="font-heading text-6xl text-[#2563EB] mt-2">${res.label}</p>
+              <p class="mt-2 text-gray-500 text-sm">${CLASS_DESC[res.label] || ''}</p>
+            </div>`;
+        } else {
+          singleBox.innerHTML = `<p class="text-[#DC2626] text-sm">❌ ${res.error || res.label}</p>`;
+        }
+      } catch (e) {
+        singleBox.innerHTML = `<p class="text-[#DC2626] text-sm">❌ 请求失败：${fetchErrorHint(e)}</p>`;
+      } finally {
+        setLoading(btn, false, origLabel);
+      }
+    });
+
+    // Ctrl/Cmd + Enter 快速预测
+    textarea.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') $('btn-predict').click();
+    });
+
+    // ---------- 四模型投票 ----------
+    $('btn-compare').addEventListener('click', async () => {
+      const text = textarea.value.trim();
+      if (!text) { alert('请输入工单内容'); textarea.focus(); return; }
+
+      const btn = $('btn-compare');
+      const origLabel = btn.innerHTML;
+      setLoading(btn, true, '');
+      resultBox.classList.remove('hidden');
+      compareBox.innerHTML = '<p class="text-gray-500 text-sm mt-6">⏳ 正在运行四模型投票（BERT / LLM 首次加载较慢）...</p>';
+      singleBox.innerHTML = '';
+
+      try {
+        const res = await api('/api/compare', { text });
+        if (res.ok) {
+          const rows = res.results.map(r => `
+            <div class="flex items-center justify-between gap-4 rounded-lg bg-[#F4F6FA] border border-gray-200/70 px-4 py-3">
+              <span class="text-[10px] font-bold tracking-[0.2em] text-gray-600 w-32 shrink-0">${r.model}</span>
+              ${r.ok
+                ? `<span class="font-heading text-2xl text-gray-900">${r.label}</span><span class="text-[#2563EB] text-xs font-bold">✓ id=${r.idx}</span>`
+                : `<span class="text-[#DC2626] text-xs">✗ ${r.label}</span>`}
+            </div>`).join('');
+          compareBox.innerHTML = `
+            <div class="mt-6">
+              <p class="text-[10px] font-bold tracking-[0.3em] text-gray-400 mb-3">四模型投票结果</p>
+              <div class="flex flex-col gap-2">${rows}</div>
+            </div>`;
+        } else {
+          compareBox.innerHTML = `<p class="text-[#DC2626] text-sm mt-6">❌ ${res.error}</p>`;
+        }
+      } catch (e) {
+        compareBox.innerHTML = `<p class="text-[#DC2626] text-sm mt-6">❌ 请求失败：${fetchErrorHint(e)}</p>`;
+      } finally {
+        setLoading(btn, false, origLabel);
+      }
+    });
+
+    // ---------- 暗色模式开关（视觉切换） ----------
+    $('theme-toggle').addEventListener('click', () => {
+      $('icon-sun').classList.toggle('hidden');
+      $('icon-moon').classList.toggle('hidden');
+    });
+
+    // ---------- 移动端汉堡菜单 ----------
+    const menuToggle = $('menu-toggle');
+    const mobileMenu = $('mobile-menu');
+    menuToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      mobileMenu.classList.toggle('hidden');
+    });
+    // 点击链接后自动收起
+    mobileMenu.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+    });
+    // 点击页面其他区域收起
+    document.addEventListener('click', (e) => {
+      if (!mobileMenu.classList.contains('hidden') && !mobileMenu.contains(e.target) && e.target !== menuToggle) {
+        mobileMenu.classList.add('hidden');
+      }
+    });
+  </script>
+</body>
+</html>

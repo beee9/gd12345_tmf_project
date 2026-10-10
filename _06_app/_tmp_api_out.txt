@@ -1,0 +1,37 @@
+{
+  "predict": {
+    "ok": false,
+    "model": "随机森林",
+    "label": "预测失败: No module named 'sklearn'",
+    "idx": -1
+  },
+  "compare": {
+    "ok": true,
+    "results": [
+      {
+        "model": "随机森林",
+        "label": "预测失败: No module named 'sklearn'",
+        "idx": -1,
+        "ok": false
+      },
+      {
+        "model": "FastText",
+        "label": "预测失败: No module named 'fasttext'",
+        "idx": -1,
+        "ok": false
+      },
+      {
+        "model": "BERT",
+        "label": "预测失败: No module named 'transformers'",
+        "idx": -1,
+        "ok": false
+      },
+      {
+        "model": "LLM(DeepSeek)",
+        "label": "预测失败: Connection error.",
+        "idx": -1,
+        "ok": false
+      }
+    ]
+  }
+}

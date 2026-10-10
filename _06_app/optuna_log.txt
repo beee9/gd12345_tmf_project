@@ -1,0 +1,65 @@
+正在初始化配置文件....
+配置文件初始化动作完成!
+============================================================
+开始随机森林自动调参...
+Tfidf特征矩阵形状: (25323, 30988)
+[I 2026-08-01 21:05:18,970] Trial 0 finished with value: 0.6445028377523886 and parameters: {'n_estimators': 250, 'max_depth': 90, 'min_samples_split': 14, 'min_samples_leaf': 8, 'max_features': 'sqrt'}. Best is trial 0 with value: 0.6445028377523886.
+[I 2026-08-01 21:05:19,343] Trial 1 finished with value: 0.533765203151416 and parameters: {'n_estimators': 50, 'max_depth': 10, 'min_samples_split': 11, 'min_samples_leaf': 3, 'max_features': 'sqrt'}. Best is trial 0 with value: 0.6445028377523886.
+[I 2026-08-01 21:05:20,143] Trial 2 finished with value: 0.6046233308917822 and parameters: {'n_estimators': 100, 'max_depth': 80, 'min_samples_split': 2, 'min_samples_leaf': 2, 'max_features': 'log2'}. Best is trial 0 with value: 0.6445028377523886.
+[I 2026-08-01 21:05:23,688] Trial 3 finished with value: 0.6268947638771621 and parameters: {'n_estimators': 250, 'max_depth': 40, 'min_samples_split': 5, 'min_samples_leaf': 10, 'max_features': 'sqrt'}. Best is trial 0 with value: 0.6445028377523886.
+[I 2026-08-01 21:05:26,746] Trial 4 finished with value: 0.6317414694488941 and parameters: {'n_estimators': 200, 'max_depth': 40, 'min_samples_split': 18, 'min_samples_leaf': 7, 'max_features': 'sqrt'}. Best is trial 0 with value: 0.6445028377523886.
+[I 2026-08-01 21:06:16,993] Trial 5 finished with value: 0.48624963731514054 and parameters: {'n_estimators': 250, 'max_depth': 40, 'min_samples_split': 3, 'min_samples_leaf': 8, 'max_features': None}. Best is trial 0 with value: 0.6445028377523886.
+[I 2026-08-01 21:06:17,370] Trial 6 finished with value: 0.45025363394133555 and parameters: {'n_estimators': 50, 'max_depth': 90, 'min_samples_split': 5, 'min_samples_leaf': 3, 'max_features': 'log2'}. Best is trial 0 with value: 0.6445028377523886.
+[I 2026-08-01 21:06:18,150] Trial 7 finished with value: 0.47101856958821775 and parameters: {'n_estimators': 150, 'max_depth': 40, 'min_samples_split': 2, 'min_samples_leaf': 3, 'max_features': 'log2'}. Best is trial 0 with value: 0.6445028377523886.
+[I 2026-08-01 21:06:18,997] Trial 8 finished with value: 0.13589514900510755 and parameters: {'n_estimators': 250, 'max_depth': 50, 'min_samples_split': 16, 'min_samples_leaf': 5, 'max_features': 'log2'}. Best is trial 0 with value: 0.6445028377523886.
+[I 2026-08-01 21:06:20,282] Trial 9 finished with value: 0.5707330586170518 and parameters: {'n_estimators': 250, 'max_depth': 30, 'min_samples_split': 10, 'min_samples_leaf': 1, 'max_features': 'log2'}. Best is trial 0 with value: 0.6445028377523886.
+[I 2026-08-01 21:07:29,251] Trial 10 finished with value: 0.5430131005571963 and parameters: {'n_estimators': 300, 'max_depth': 70, 'min_samples_split': 13, 'min_samples_leaf': 10, 'max_features': None}. Best is trial 0 with value: 0.6445028377523886.
+[I 2026-08-01 21:07:32,718] Trial 11 finished with value: 0.6451435833084077 and parameters: {'n_estimators': 150, 'max_depth': 100, 'min_samples_split': 19, 'min_samples_leaf': 7, 'max_features': 'sqrt'}. Best is trial 11 with value: 0.6451435833084077.
+[I 2026-08-01 21:07:36,142] Trial 12 finished with value: 0.6452812587583493 and parameters: {'n_estimators': 150, 'max_depth': 100, 'min_samples_split': 20, 'min_samples_leaf': 7, 'max_features': 'sqrt'}. Best is trial 12 with value: 0.6452812587583493.
+[I 2026-08-01 21:07:39,596] Trial 13 finished with value: 0.652201699177577 and parameters: {'n_estimators': 150, 'max_depth': 100, 'min_samples_split': 20, 'min_samples_leaf': 6, 'max_features': 'sqrt'}. Best is trial 13 with value: 0.652201699177577.
+[I 2026-08-01 21:07:43,162] Trial 14 finished with value: 0.6516430492909663 and parameters: {'n_estimators': 150, 'max_depth': 100, 'min_samples_split': 20, 'min_samples_leaf': 5, 'max_features': 'sqrt'}. Best is trial 13 with value: 0.652201699177577.
+[I 2026-08-01 21:07:45,294] Trial 15 finished with value: 0.6464995683962688 and parameters: {'n_estimators': 100, 'max_depth': 70, 'min_samples_split': 17, 'min_samples_leaf': 5, 'max_features': 'sqrt'}. Best is trial 13 with value: 0.652201699177577.
+[I 2026-08-01 21:08:16,700] Trial 16 finished with value: 0.6012082971322925 and parameters: {'n_estimators': 100, 'max_depth': 100, 'min_samples_split': 20, 'min_samples_leaf': 5, 'max_features': None}. Best is trial 13 with value: 0.652201699177577.
+[I 2026-08-01 21:08:20,962] Trial 17 finished with value: 0.6488170804780802 and parameters: {'n_estimators': 200, 'max_depth': 80, 'min_samples_split': 15, 'min_samples_leaf': 6, 'max_features': 'sqrt'}. Best is trial 13 with value: 0.652201699177577.
+[I 2026-08-01 21:08:25,476] Trial 18 finished with value: 0.6517803090586413 and parameters: {'n_estimators': 200, 'max_depth': 80, 'min_samples_split': 18, 'min_samples_leaf': 4, 'max_features': 'sqrt'}. Best is trial 13 with value: 0.652201699177577.
+[I 2026-08-01 21:08:29,137] Trial 19 finished with value: 0.649117734907534 and parameters: {'n_estimators': 200, 'max_depth': 60, 'min_samples_split': 17, 'min_samples_leaf': 4, 'max_features': 'sqrt'}. Best is trial 13 with value: 0.652201699177577.
+[I 2026-08-01 21:09:58,050] Trial 20 finished with value: 0.5879799905229411 and parameters: {'n_estimators': 300, 'max_depth': 80, 'min_samples_split': 12, 'min_samples_leaf': 4, 'max_features': None}. Best is trial 13 with value: 0.652201699177577.
+[I 2026-08-01 21:10:02,267] Trial 21 finished with value: 0.6481591170369473 and parameters: {'n_estimators': 150, 'max_depth': 90, 'min_samples_split': 18, 'min_samples_leaf': 6, 'max_features': 'sqrt'}. Best is trial 13 with value: 0.652201699177577.
+[I 2026-08-01 21:10:07,657] Trial 22 finished with value: 0.6550679883604159 and parameters: {'n_estimators': 200, 'max_depth': 100, 'min_samples_split': 20, 'min_samples_leaf': 4, 'max_features': 'sqrt'}. Best is trial 22 with value: 0.6550679883604159.
+[I 2026-08-01 21:10:12,818] Trial 23 finished with value: 0.6536778960303641 and parameters: {'n_estimators': 200, 'max_depth': 90, 'min_samples_split': 18, 'min_samples_leaf': 4, 'max_features': 'sqrt'}. Best is trial 22 with value: 0.6550679883604159.
+[I 2026-08-01 21:10:20,021] Trial 24 finished with value: 0.7050159329166281 and parameters: {'n_estimators': 200, 'max_depth': 90, 'min_samples_split': 16, 'min_samples_leaf': 1, 'max_features': 'sqrt'}. Best is trial 24 with value: 0.7050159329166281.
+[I 2026-08-01 21:10:25,366] Trial 25 finished with value: 0.6750633452047872 and parameters: {'n_estimators': 200, 'max_depth': 90, 'min_samples_split': 15, 'min_samples_leaf': 2, 'max_features': 'sqrt'}. Best is trial 24 with value: 0.7050159329166281.
+[I 2026-08-01 21:10:31,215] Trial 26 finished with value: 0.700303262300382 and parameters: {'n_estimators': 200, 'max_depth': 70, 'min_samples_split': 15, 'min_samples_leaf': 1, 'max_features': 'sqrt'}. Best is trial 24 with value: 0.7050159329166281.
+[I 2026-08-01 21:10:37,242] Trial 27 finished with value: 0.7080165347773069 and parameters: {'n_estimators': 200, 'max_depth': 70, 'min_samples_split': 9, 'min_samples_leaf': 1, 'max_features': 'sqrt'}. Best is trial 27 with value: 0.7080165347773069.
+[I 2026-08-01 21:11:58,889] Trial 28 finished with value: 0.5770735871826175 and parameters: {'n_estimators': 300, 'max_depth': 60, 'min_samples_split': 8, 'min_samples_leaf': 1, 'max_features': None}. Best is trial 27 with value: 0.7080165347773069.
+[I 2026-08-01 21:12:05,885] Trial 29 finished with value: 0.7067406335153422 and parameters: {'n_estimators': 250, 'max_depth': 70, 'min_samples_split': 9, 'min_samples_leaf': 1, 'max_features': 'sqrt'}. Best is trial 27 with value: 0.7080165347773069.
+最优F1: 0.7080
+最优参数: {'n_estimators': 200, 'max_depth': 70, 'min_samples_split': 9, 'min_samples_leaf': 1, 'max_features': 'sqrt'}
+最优随机森林模型已保存: E:\Binge project\gd12345_tmf_project/_02_rf/model/rf.pkl
+============================================================
+开始FastText自动调参...
+[W 2026-08-01 21:12:08,481] Trial 0 failed with parameters: {'lr': 0.4076239658010248, 'dim': 300, 'epoch': 35, 'minCount': 4, 'wordNgrams': 4} because of the following error: TypeError('(): incompatible function arguments. The following argument types are supported:\n    1. (self: fasttext_pybind.args, arg0: str) -> None\n\nInvoked with: <fasttext_pybind.args object at 0x0000023CA854FC70>, None').
+Traceback (most recent call last):
+  File "E:\anaconda3\envs\pytorch-gpu\Lib\site-packages\optuna\study\_optimize.py", line 206, in _run_trial
+    value_or_values = func(trial)
+                      ^^^^^^^^^^^
+  File "E:\Binge project\gd12345_tmf_project\_06_app\_03_optuna_tuning.py", line 108, in objective
+    model = fasttext.train_supervised(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\anaconda3\envs\pytorch-gpu\Lib\site-packages\fasttext\FastText.py", line 526, in train_supervised
+    a = _build_args(args, manually_set_args)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\anaconda3\envs\pytorch-gpu\Lib\site-packages\fasttext\FastText.py", line 418, in _build_args
+    setattr(a, k, v)
+TypeError: (): incompatible function arguments. The following argument types are supported:
+    1. (self: fasttext_pybind.args, arg0: str) -> None
+
+Invoked with: <fasttext_pybind.args object at 0x0000023CA854FC70>, None
+[W 2026-08-01 21:12:08,507] Trial 0 failed with value None.
+FastText调参失败: (): incompatible function arguments. The following argument types are supported:
+    1. (self: fasttext_pybind.args, arg0: str) -> None
+
+Invoked with: <fasttext_pybind.args object at 0x0000023CA854FC70>, None
+============================================================
+调参完成，总耗时: 418.0秒
+随机森林最优F1: 0.7080, 参数: {'n_estimators': 200, 'max_depth': 70, 'min_samples_split': 9, 'min_samples_leaf': 1, 'max_features': 'sqrt'}
